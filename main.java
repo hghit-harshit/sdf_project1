@@ -10,7 +10,7 @@ public class main {
         AInteger some = new AInteger(a);
         AInteger thing = new AInteger(b);
         
-        AInteger other = some.Mult(thing);
+        AInteger other = some.Divide(thing);
         other.Print();
     }
 }

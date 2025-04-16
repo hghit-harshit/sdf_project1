@@ -152,6 +152,7 @@ public class AInteger
     {
         AInteger l_answer = new AInteger(); // Initialize with 0
         int l_borrow = 0;
+        //int l_carry = 0;
         // this tells us if the answer of subtraction will be negative
         boolean l_sign = true;
         //We always want to subtract smaller value from larger value 
@@ -187,7 +188,7 @@ public class AInteger
             // left neighbour
             if((digit1-l_borrow) < digit2)
             {
-                diff = 10*(digit1-l_borrow) - digit2;
+                diff = 10+(digit1-l_borrow) - digit2;
                 l_borrow = 1;
             }
             else
@@ -199,10 +200,15 @@ public class AInteger
             i--;
             j--;
         }
-
         // Reverse the result 
         //if(l_isNegative)l_result.append('-');
-        l_answer.m_value = l_result.reverse().toString();
+
+        l_result = l_result.reverse();
+        while(l_result.length() > 1 && l_result.charAt(0) == '0')
+        {
+            l_result.deleteCharAt(0);
+        }
+        l_answer.m_value = l_result.toString();
         l_answer.m_digits = l_answer.m_value.length();
         l_answer.m_sign = l_sign;
 
@@ -245,6 +251,29 @@ public class AInteger
 
         return l_answer;
     }
+
+    public AInteger Divide(AInteger l_other)
+    {
+        AInteger l_answer = new AInteger("0");
+        
+        // if only one of them i negative then the answer will be negative
+        if(m_sign ^ l_other.m_sign)l_answer.m_sign = false;
+        // we'll again use a very basic algorithm to compute a/b
+        // well just subtract b from a untill we get result less than b
+        AInteger temp  = new AInteger(this);
+        int i = 0;
+        while(!(Compare(temp,l_other) == -1))
+        {
+            //System.out.print("Infinite loop\n");
+            temp = temp.Subtract(l_other);
+            l_answer = l_answer.Add(new AInteger("1"));
+            temp.Print();
+            l_answer.Print();
+            i++;
+        }
+        return l_answer;
+    }
+
     static public AInteger Parse(String l_string) // returns an instance of AInterger
     {
         return new AInteger(l_string);
@@ -253,6 +282,7 @@ public class AInteger
     public void Print()
     {
         System.out.print(m_value);
+        System.out.print("\n");
     }
 }
 
