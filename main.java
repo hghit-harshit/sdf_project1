@@ -10,7 +10,17 @@ public class main {
         AInteger some = new AInteger(a);
         AInteger thing = new AInteger(b);
         
-        AInteger other = some.Divide(thing);
-        other.Print();
+        AInteger other1 = some.Add(thing);
+        other1.Print();
+        //AInteger other2 = some.Subtract(thing);
+        AInteger other3 = some.Mult(thing);
+        other3.Print();
+        AInteger other4 = some.Divide(thing);
+        other4.Print();
+       
+        //other2.Print();
+        
+        
+
     }
 }
