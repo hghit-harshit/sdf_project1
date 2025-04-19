@@ -1,11 +1,13 @@
 package arbritraryarithmetic;
 
+import java.util.concurrent.Flow.Subscriber;
+
 public class AInteger
 {
-    private String m_value; // the value of the integer
-    private int m_digits; // number of digits in the number
+    protected String m_value; // the value of the integer
+    protected int m_digits; // number of digits in the number
     private boolean m_sign; // if ture then postive and false for negative
-
+    // made them protected as i wanted AFloat to be able to access them
     public AInteger() // default constructor
     {
         m_value = "0";
@@ -16,19 +18,23 @@ public class AInteger
     public AInteger(String l_string)
     {
         l_string = l_string.replaceAll("\\s", "");// removing whitespaces
-        
-        if(l_string.charAt(0) != '-')
+        if(!l_string.matches("^-?\\d+$")) // checking it the string is valid 
         {
-            m_value = l_string;
-            m_digits = m_value.length();
-            m_sign = true;
+            System.out.print("Invalid entry!\n");
         }
-        else 
+        if(l_string.charAt(0) == '-')
         {
-            m_value = l_string.substring(1);
-            m_digits = l_string.length() - 1;
+            l_string = l_string.substring(1);
             m_sign = false;
         }
+        else// dont really need this but it makes things clear i guess
+        {
+            m_sign = true;
+        }
+        
+        l_string = l_string.replaceAll("^0+(?!$)",""); // remove all leading zeros          
+        m_value = l_string;
+        m_digits = m_value.length();
         // if it is a negatie number we exclude the megative sign from
         // number of digits 
     }
@@ -138,7 +144,7 @@ public class AInteger
         if(m_value == "0")
         {
             l_answer = new AInteger(l_other);
-            l_answer.m_sing = !(l_other.m_sign);
+            l_answer.m_sign = !(l_other.m_sign);
             return l_answer;
         }
         else if(l_other.m_value == "0") return new AInteger(this);
