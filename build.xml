@@ -1,0 +1,71 @@
+<project name="SDF_PROJECT1" default="run" basedir=".">
+
+    <!--Directories-->
+    <property name="src.dir" value="src"/>
+    <property name="build.dir" value="build"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="test.dir" value="test"/>
+    <property name="report.dir" value="test-report"/>
+    
+
+    <!--Creating required directories-->
+    <target name="init">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${report.dir}"/>
+    </target>
+
+    <!-- Compiling source code -->
+    <target name="compile" depends="init">
+        <javac srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="false">
+            <classpath>
+                <path>
+                    <pathelement path="${build.dir}" />
+                    <fileset dir="${lib.dir}" includes="**/*.jar"/>
+                </path>
+            </classpath>
+        </javac>
+    </target>
+
+    <!--Compiling tests-->
+    <target name="compile-tests" depends="compile">
+        <javac srcdir="${test.dir}" destdir="${build.dir}" includeantruntime="false">
+            <classpath>
+                <path>
+                    <pathelement path="${build.dir}"/>
+                    <fileset dir="${lib.dir}" includes="**/*.jar"/>
+                </path>
+            </classpath>
+        </javac>
+    </target>
+    <!--Run tests-->
+    <target name="test" depends="compile-tests">
+        <junit printsummary="yes" haltonfailure="no">
+            <classpath>
+                <pathelement path="${build.dir}"/>
+                <fileset dir="${lib.dir}" includes="**/*.jar"/>
+            </classpath>
+            <batchtest todir="${report.dir}">
+                <fileset dir="${test.dir}">
+                    <include name="**/*Test.java"/>
+                </fileset>
+            </batchtest>
+            <formatter type="plain"/>
+        </junit>
+    </target>
+
+    <!--Running the main class-->
+    <target name="run" depends="compile">
+        <java classname="main" fork="true">
+            <classpath>
+                <pathelement path="${build.dir}"/>
+            </classpath>
+        </java>
+    </target>
+
+    <!--Clean up the build-->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete dir="${report.dir}"/>
+    </target>
+
+</project>

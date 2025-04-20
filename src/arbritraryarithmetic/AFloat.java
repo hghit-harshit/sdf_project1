@@ -10,7 +10,7 @@ public class AFloat
     boolean m_sign; 
     int m_digitsBefore;
     int m_digitsAfter;
-
+    int m_precision; // basically how many digits we want after decimal
 
     public AFloat()
     {
@@ -198,7 +198,7 @@ public class AFloat
         AInteger otherCopy = new AInteger(l_other.m_beforeDeci);
 
         copy = copy.Subtract(new AInteger(String.valueOf(l_borrow)));
-        l_answer.m_beforeDeci = copy.Subtract(otherCopy).m_value
+        l_answer.m_beforeDeci = copy.Subtract(otherCopy).m_value;
         l_answer.m_afterDeci = l_result.reverse().toString();
         l_answer.m_sign = (Compare(this,l_other) == -1) ? false : true; // we decide the sign
         
@@ -212,7 +212,7 @@ public class AFloat
         // just multiply them as integer and replace 
         // the decimal's place
         AInteger copy = new AInteger(m_beforeDeci + m_afterDeci);
-        AInterger otherCopy = new AInteger(l_other.m_beforeDeci + l_other.m_beforeDeci);
+        AInteger otherCopy = new AInteger(l_other.m_beforeDeci + l_other.m_beforeDeci);
         
         AInteger l_result = copy.Mult(otherCopy);
         // now we caculate the place of the decimal point
@@ -226,7 +226,29 @@ public class AFloat
 
     public AFloat Divide(AFloat l_other)
     {
-        
+        AInteger l_answer = new AFloat();
+        // similar to mult we convert into integer and divide
+        // if m_value > l_other
+
+        AInteger copy  = new AInteger(m_beforeDeci + m_afterDeci);
+        AInteger otherCopy = new AInteger(l_other.m_beforeDeci + l_other.m_afterDeci);
+        copy.m_sign = true;
+        otherCopy.m_sign = true;
+
+        int deci = l_other.m_digitsAfter - m_digitsAfter; //location of decimal in answer
+        int i = 0;
+        while(!(Compare(copy,otherCopy) == -1) )
+        {
+            //System.out.print("Infinite loop\n");
+            copy = copy.Subtract(otherCopy);
+            l_answer = l_answer.Add(new AInteger("1"));
+            //temp.Print();
+            //l_answer.Print();
+        }
+
+        l_answer.m_sign = (m_sign==l_other.m_sign);
+
+        return l_answer;
     }
     public void Print()
     {

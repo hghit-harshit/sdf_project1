@@ -320,5 +320,10 @@ public class AInteger
         System.out.print(m_value);
         System.out.print("\n");
     }
+
+    public String GetValue()
+    {
+        return m_value;
+    }
 }
 
