@@ -189,6 +189,7 @@ public class AFloat
                 l_borrow = 0;
             }
             l_result.append(diff);
+            --i;
         }
         
         
@@ -212,44 +213,51 @@ public class AFloat
         // just multiply them as integer and replace 
         // the decimal's place
         AInteger copy = new AInteger(m_beforeDeci + m_afterDeci);
-        AInteger otherCopy = new AInteger(l_other.m_beforeDeci + l_other.m_beforeDeci);
+        AInteger otherCopy = new AInteger(l_other.m_beforeDeci + l_other.m_afterDeci);
         
+        // copy.Print();
+        // otherCopy.Print();
+
         AInteger l_result = copy.Mult(otherCopy);
         // now we caculate the place of the decimal point
         int deci = m_digitsAfter + l_other.m_digitsAfter;
-        l_answer.m_afterDeci = l_result.m_value.substring(l_result.m_digits - deci);
+        // trimming trailing zeroes
+        l_answer.m_afterDeci = (l_result.m_value.substring(l_result.m_digits - deci)).replaceAll("0+$","");
+        if(l_answer.m_afterDeci == "")l_answer.m_afterDeci = "0";
         l_answer.m_beforeDeci = l_result.m_value.substring(0,l_result.m_digits - deci);
         l_answer.m_sign = (m_sign == l_other.m_sign);
         
         return l_answer;
     }
 
-    public AFloat Divide(AFloat l_other)
-    {
-        AInteger l_answer = new AFloat();
-        // similar to mult we convert into integer and divide
-        // if m_value > l_other
+    // public AFloat Divide(AFloat l_other)
+    // {
+    //     AFloat l_answer = new AFloat();
+    //     // similar to mult we convert into integer and divide
+    //     // if m_value > l_other
 
-        AInteger copy  = new AInteger(m_beforeDeci + m_afterDeci);
-        AInteger otherCopy = new AInteger(l_other.m_beforeDeci + l_other.m_afterDeci);
-        copy.m_sign = true;
-        otherCopy.m_sign = true;
+    //     AInteger copy  = new AInteger(m_beforeDeci + m_afterDeci);
+    //     AInteger otherCopy = new AInteger(l_other.m_beforeDeci + l_other.m_afterDeci);
+    //     // copy.m_sign = true;
+    //     // otherCopy.m_sign = true;
 
-        int deci = l_other.m_digitsAfter - m_digitsAfter; //location of decimal in answer
-        int i = 0;
-        while(!(Compare(copy,otherCopy) == -1) )
-        {
-            //System.out.print("Infinite loop\n");
-            copy = copy.Subtract(otherCopy);
-            l_answer = l_answer.Add(new AInteger("1"));
-            //temp.Print();
-            //l_answer.Print();
-        }
+    //     int deci = l_other.m_digitsAfter - m_digitsAfter; //location of decimal in answer
+    //     int i = 0;
+    //     while(!(AInteger.Compare(copy,otherCopy) == -1) )
+    //     {
+    //         //System.out.print("Infinite loop\n");
+    //         copy = copy.Subtract(otherCopy);
+    //         l_answer = l_answer.Add(new AInteger("1"));
+    //         //temp.Print();
+    //         //l_answer.Print();
+    //     }
+    //     // by the virtue of our implementaion final value of copy will be the remainder
+    //     // so now we continue the division
 
-        l_answer.m_sign = (m_sign==l_other.m_sign);
+    //     l_answer.m_sign = (m_sign==l_other.m_sign);
 
-        return l_answer;
-    }
+    //     return l_answer;
+    // }
     public void Print()
     {
         if(!m_sign)System.out.print('-');
@@ -257,5 +265,15 @@ public class AFloat
         System.out.print('.');
         System.out.print(m_afterDeci);
         System.out.print("\n");
+    }
+
+    static public AFloat Parse(String l_string)
+    {
+        return new AFloat(l_string);
+    }
+
+    public String GetValue()
+    {
+        return (m_beforeDeci + '.' + m_afterDeci);
     }
 }

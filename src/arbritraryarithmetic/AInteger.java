@@ -114,7 +114,7 @@ public class AInteger
 
     }
 
-    private int Compare(AInteger a, AInteger b)
+    protected static int Compare(AInteger a, AInteger b)
     {
         // This will return 1 if a>b
         // 0 if a == b
@@ -323,7 +323,7 @@ public class AInteger
 
     public String GetValue()
     {
-        return m_value;
+        return (m_sign ?m_value : '-'+m_value);
     }
 }
 
