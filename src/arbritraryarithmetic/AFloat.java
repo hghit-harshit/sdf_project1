@@ -67,9 +67,11 @@ public class AFloat
     
     public AFloat(AFloat l_other)
     {
-        m_afterDeci  = l_other.m_afterDeci;
-        m_beforeDeci = l_other.m_beforeDeci;
-        m_sign       = l_other.m_sign;
+        m_afterDeci    = l_other.m_afterDeci;
+        m_beforeDeci   = l_other.m_beforeDeci;
+        m_digitsBefore = l_other.m_digitsBefore;
+        m_digitsAfter  = l_other.m_digitsAfter;
+        m_sign         = l_other.m_sign;
     }
 
     public AFloat Add(AFloat l_other)
@@ -171,8 +173,8 @@ public class AFloat
         int l_borrow = 0;
         while(i >= 0)
         {
-            int digit1 = (i <= m_digitsAfter) ? (m_afterDeci.charAt(i) - '0') : 0;
-            int digit2 = (i <= l_other.m_digitsAfter) ? (l_other.m_afterDeci.charAt(i) - '0') : 0;
+            int digit1 = (i < m_digitsAfter) ? (m_afterDeci.charAt(i) - '0') : 0;
+            int digit2 = (i < l_other.m_digitsAfter) ? (l_other.m_afterDeci.charAt(i) - '0') : 0;
             // int sum = digit1 + digit2 + l_carry;
             // l_carry = sum / 10;
             // l_result.append(sum % 10);
@@ -202,7 +204,8 @@ public class AFloat
         l_answer.m_beforeDeci = copy.Subtract(otherCopy).m_value;
         l_answer.m_afterDeci = l_result.reverse().toString();
         l_answer.m_sign = (Compare(this,l_other) == -1) ? false : true; // we decide the sign
-        
+        l_answer.m_digitsBefore = l_answer.m_beforeDeci.length();
+        l_answer.m_digitsAfter = l_answer.m_afterDeci.length();
         return l_answer;
     }
 
@@ -221,43 +224,89 @@ public class AFloat
         AInteger l_result = copy.Mult(otherCopy);
         // now we caculate the place of the decimal point
         int deci = m_digitsAfter + l_other.m_digitsAfter;
+        if(deci > l_result.m_digits)
+        {
+            //this is cases like 0.000005
+            // we pad afterDeci with more zeroes
+            StringBuilder paddedValue = new StringBuilder(l_result.m_value);
+            for(int i = 0; i < deci - l_result.m_digits; ++i)
+            {
+                paddedValue.insert(0,"0");
+            }
+            l_result.m_value = paddedValue.toString();
+            l_result.m_digits = l_result.m_value.length();
+        }
         // trimming trailing zeroes
         l_answer.m_afterDeci = (l_result.m_value.substring(l_result.m_digits - deci)).replaceAll("0+$","");
         if(l_answer.m_afterDeci == "")l_answer.m_afterDeci = "0";
+        
         l_answer.m_beforeDeci = l_result.m_value.substring(0,l_result.m_digits - deci);
+        if(l_answer.m_beforeDeci == "")l_answer.m_beforeDeci = "0";
+       
         l_answer.m_sign = (m_sign == l_other.m_sign);
         
+        l_answer.m_digitsBefore = l_answer.m_beforeDeci.length();
+        l_answer.m_digitsAfter = l_answer.m_afterDeci.length();
+         
         return l_answer;
     }
 
-    // public AFloat Divide(AFloat l_other)
-    // {
-    //     AFloat l_answer = new AFloat();
-    //     // similar to mult we convert into integer and divide
-    //     // if m_value > l_other
+   
+    // we would try to implement the divison usig newtow raphson method
+    public AFloat Divide(AFloat l_other)
+    {
+        
+        // we are going to implement newton raphson method
+        // which basically approximate value of 1/l_other
+        // here we iterate with xi+1 = xi(2 - xi*l_other) untill we converge
+        // to a satisfactory answer
+        // and presision almost doubles with every iteration 
+        // so for precision upto 1000 digits 10 iteration ought to be enough
+        // but we will do upto 12 iterations
+        StringBuilder l_initialGuess = new StringBuilder("1");
+        for(int i = 0; i< l_other.m_digitsBefore; ++i)
+        { l_initialGuess.insert(0,"0"); }
+        l_initialGuess.insert(0,"0.");
+        AFloat l_answer = new AFloat(l_initialGuess.toString());
+        // initial guess
+        // based on number of digits in l_other
+        AFloat l_two = new AFloat("2.0");
+        int i = 0;
+        System.out.print("is it coming here\n");
+        while(i < 20)
+        {
+            // l_answer = l_answer.Mult(l_two.Subtract(l_answer.Mult(l_other)));
+            
+            // l_answer.Print();
+            // i++;
 
-    //     AInteger copy  = new AInteger(m_beforeDeci + m_afterDeci);
-    //     AInteger otherCopy = new AInteger(l_other.m_beforeDeci + l_other.m_afterDeci);
-    //     // copy.m_sign = true;
-    //     // otherCopy.m_sign = true;
+            AFloat mult = l_other.Mult(l_answer); // b * xₙ
+            //mult.Print();
+            AFloat sub = l_two.Subtract(mult);    // (2 - b * xₙ)
+            //sub.Print();
+            l_answer = l_answer.Mult(sub);    // xₙ₊₁ = xₙ * (2 - b * xₙ)
+            //l_answer.Print();
+            i++;
+            
+            // we are trimmin upto 1500 to get accurary of 1000 on final result 
+            // if we only trim till 1000 its not accurate upto 1000
+            if (l_answer.m_afterDeci.length() > 1500) 
+            {
+                l_answer.m_afterDeci = l_answer.m_afterDeci.substring(0, 1500);
+                l_answer.m_digitsAfter = 1500;
+            }
+        }
 
-    //     int deci = l_other.m_digitsAfter - m_digitsAfter; //location of decimal in answer
-    //     int i = 0;
-    //     while(!(AInteger.Compare(copy,otherCopy) == -1) )
-    //     {
-    //         //System.out.print("Infinite loop\n");
-    //         copy = copy.Subtract(otherCopy);
-    //         l_answer = l_answer.Add(new AInteger("1"));
-    //         //temp.Print();
-    //         //l_answer.Print();
-    //     }
-    //     // by the virtue of our implementaion final value of copy will be the remainder
-    //     // so now we continue the division
+        l_answer =  this.Mult(l_answer);
 
-    //     l_answer.m_sign = (m_sign==l_other.m_sign);
+        if (l_answer.m_afterDeci.length() > 1000)// trimming upto 1000 digits after decimal
+        {
+            l_answer.m_afterDeci = l_answer.m_afterDeci.substring(0, 1000);
+            l_answer.m_digitsAfter = 1000;
+        }
 
-    //     return l_answer;
-    // }
+        return l_answer;
+    }
     public void Print()
     {
         if(!m_sign)System.out.print('-');

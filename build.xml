@@ -37,6 +37,7 @@
             </classpath>
         </javac>
     </target>
+    
     <!--Run tests-->
     <target name="test" depends="compile-tests">
         <junit printsummary="yes" haltonfailure="no">
