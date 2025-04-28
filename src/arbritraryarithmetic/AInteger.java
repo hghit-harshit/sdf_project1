@@ -285,27 +285,34 @@ public class AInteger
             System.out.print("Division by zero!\n");
             return new AInteger("0");
         }
-        AInteger l_answer = new AInteger();
         
         // we'll again use a very basic algorithm to compute a/b
         // well just subtract b from a untill we get result less than b
-        AInteger copy  = new AInteger(this);
-        AInteger otherCopy = new AInteger(l_other);
-        copy.m_sign = true;
-        otherCopy.m_sign = true;
-        int i = 0;
-        while(!(Compare(copy,otherCopy) == -1))
-        {
-            //System.out.print("Infinite loop\n");
-            copy = copy.Subtract(otherCopy);
-            l_answer = l_answer.Add(new AInteger("1"));
-            //temp.Print();
-            //l_answer.Print();
-            i++;
-        }
+        // AInteger copy  = new AInteger(this);
+        // AInteger otherCopy = new AInteger(l_other);
+        // copy.m_sign = true;
+        // otherCopy.m_sign = true;
+        // int i = 0;
+        // while(!(Compare(copy,otherCopy) == -1))
+        // {
+        //     //System.out.print("Infinite loop\n");
+        //     copy = copy.Subtract(otherCopy);
+        //     l_answer = l_answer.Add(new AInteger("1"));
+        //     //temp.Print();
+        //     //l_answer.Print();
+        //     i++;
+        // }
 
-        l_answer.m_sign = (m_sign==l_other.m_sign);
+        // l_answer.m_sign = (m_sign==l_other.m_sign);
 
+        // Instead we could use the newton raphson method that is 
+        // implemented in float and just output the part before decimal
+
+        AFloat a = AFloat.Parse(m_value);
+        AFloat b = AFloat.Parse(l_other.m_value);
+        AFloat c = a.Divide(b);
+    
+        AInteger l_answer = new AInteger(c.m_beforeDeci);
         return l_answer;
     }
 

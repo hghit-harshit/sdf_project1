@@ -56,7 +56,16 @@
 
     <!--Running the main class-->
     <target name="run" depends="compile">
-        <java classname="main" fork="true">
+        <java classname="MyInfArith" fork="true">
+            <classpath>
+                <pathelement path="${build.dir}"/>
+            </classpath>
+        </java>
+    </target>
+
+    <!--Build and run the GUI Version-->
+    <target name = "runGui" depends="compile">
+        <java classname = "mainGui" fork= "true">
             <classpath>
                 <pathelement path="${build.dir}"/>
             </classpath>
