@@ -65,7 +65,7 @@
 
     <!--Build and run the GUI Version-->
     <target name = "runGui" depends="compile">
-        <java classname = "mainGui" fork= "true">
+        <java classname = "MainGui" fork= "true">
             <classpath>
                 <pathelement path="${build.dir}"/>
             </classpath>
