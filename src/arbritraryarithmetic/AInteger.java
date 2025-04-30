@@ -1,5 +1,4 @@
 package arbritraryarithmetic;
-
 import java.util.concurrent.Flow.Subscriber;
 
 public class AInteger
@@ -19,8 +18,9 @@ public class AInteger
     {
         l_string = l_string.replaceAll("\\s", "");// removing whitespaces
         if(!l_string.matches("^-?\\d+$")) // checking it the string is valid 
-        {
+        {   
             System.out.print("Invalid entry!\n");
+            throw new IllegalArgumentException("Invalid Input\n");
         }
         if(l_string.charAt(0) == '-')
         {
@@ -41,9 +41,9 @@ public class AInteger
 
     public AInteger(AInteger l_other)
     {
-        m_value = l_other.m_value;
+        m_value  = l_other.m_value;
         m_digits = l_other.m_digits;
-        m_sign = l_other.m_sign;
+        m_sign   = l_other.m_sign;
     }
 
     
@@ -54,7 +54,7 @@ public class AInteger
         else if(l_other.m_value == "0") return new AInteger(this);
         if((m_sign != l_other.m_sign))
         {
-            AInteger copy = new AInteger(this);
+            AInteger copy      = new AInteger(this);
             AInteger otherCopy = new AInteger(l_other);
             // but we want the sign to be positive
             copy.m_sign = true;
@@ -76,7 +76,7 @@ public class AInteger
         int l_carry = 0;
 
         // Ensure m_digits is the larger number
-        String l_longerValue = m_value;
+        String l_longerValue  = m_value;
         String l_shorterValue = l_other.m_value;
         if (m_digits < l_other.m_digits) 
         {
@@ -86,6 +86,7 @@ public class AInteger
 
         // Perform addition
         StringBuilder l_result = new StringBuilder();
+
         int i = l_longerValue.length() - 1;
         int j = l_shorterValue.length() - 1;
 
@@ -102,9 +103,9 @@ public class AInteger
         }
 
         // Reverse the result string
-        l_answer.m_value = l_result.reverse().toString();
+        l_answer.m_value  = l_result.reverse().toString();
         l_answer.m_digits = l_answer.m_value.length();
-        l_answer.m_sign = m_sign;
+        l_answer.m_sign   = m_sign;
         // here we are making the sign of answer same as m_sing
         //this is because the control will only ever reach here
         // if m_sign and l_other.m_sign are same
@@ -150,8 +151,9 @@ public class AInteger
         else if(l_other.m_value == "0") return new AInteger(this);
         if(m_sign!=l_other.m_sign)
         {
-            System.out.print("is it getting here\n");
-            AInteger copy = new AInteger(this);
+            
+
+            AInteger copy      = new AInteger(this);
             AInteger otherCopy = new AInteger(l_other);
             copy.m_sign = true;
             otherCopy.m_sign = true;
@@ -229,9 +231,9 @@ public class AInteger
             l_result.deleteCharAt(0);
         }
 
-        l_answer.m_value = l_result.toString();
+        l_answer.m_value  = l_result.toString();
         l_answer.m_digits = l_answer.m_value.length();
-        l_answer.m_sign = l_sign;
+        l_answer.m_sign   = l_sign;
 
         return l_answer;
     }
@@ -283,29 +285,11 @@ public class AInteger
         else if(l_other.m_value == "0")
         {
             System.out.print("Division by zero!\n");
-            return new AInteger("0");
+            throw new IllegalArgumentException("Division by Zero!");
         }
         
-        // we'll again use a very basic algorithm to compute a/b
-        // well just subtract b from a untill we get result less than b
-        // AInteger copy  = new AInteger(this);
-        // AInteger otherCopy = new AInteger(l_other);
-        // copy.m_sign = true;
-        // otherCopy.m_sign = true;
-        // int i = 0;
-        // while(!(Compare(copy,otherCopy) == -1))
-        // {
-        //     //System.out.print("Infinite loop\n");
-        //     copy = copy.Subtract(otherCopy);
-        //     l_answer = l_answer.Add(new AInteger("1"));
-        //     //temp.Print();
-        //     //l_answer.Print();
-        //     i++;
-        // }
-
-        // l_answer.m_sign = (m_sign==l_other.m_sign);
-
-        // Instead we could use the newton raphson method that is 
+    
+        // We could use the newton raphson method that is 
         // implemented in float and just output the part before decimal
 
         AFloat a = AFloat.Parse(m_value);
