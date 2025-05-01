@@ -111,16 +111,23 @@ public class MainGui {
             }
             if(m_state == State.INT)
             {
-                AInteger a = AInteger.Parse(m_first.getText());
-                AInteger b = AInteger.Parse(m_second.getText());
-                AInteger c = AInteger.Parse("0");
+                try
+                {
+                    AInteger a = AInteger.Parse(m_first.getText());
+                    AInteger b = AInteger.Parse(m_second.getText());
+                    AInteger c = AInteger.Parse("0");
 
-                if(l_source == m_mult){     c = a.Mult(b); }
-                else if(l_source == m_div){ c = a.Divide(b); }
-                else if(l_source == m_add){ c = a.Add(b); }
-                else if(l_source == m_sub){ c = a.Subtract(b); }
+                    if(l_source == m_mult){     c = a.Mult(b); }
+                    else if(l_source == m_div){ c = a.Divide(b); }
+                    else if(l_source == m_add){ c = a.Add(b); }
+                    else if(l_source == m_sub){ c = a.Subtract(b); }
 
-                m_answer.setText(c.GetValue());
+                    m_answer.setText(c.GetValue());
+                }
+                catch (Exception e)
+                {
+                    m_answer.setText(e.getMessage());
+                }
             }
             else if (m_state == State.FLOAT)
             {
