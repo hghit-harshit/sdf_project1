@@ -1,4 +1,6 @@
 package arbritraryarithmetic;
+import java.security.AllPermission;
+
 import arbritraryarithmetic.AInteger;
 
 public class AFloat 
@@ -20,6 +22,7 @@ public class AFloat
     public AFloat(String l_string)
     {
 
+        m_precision = 20;
         // first we'll remove all the spaces from the string
         l_string = l_string.replaceAll("\\s+", "");
         //l_string = l_string.trim().replaceAll("[^\\d.-]", "");
@@ -37,7 +40,7 @@ public class AFloat
             m_sign   = false;
             l_string = l_string.substring(1);
         }
-        else m_sign = true;
+        else m_sign  = true;
 
         int l_index = l_string.indexOf('.');
         if(l_index != -1)
@@ -45,10 +48,10 @@ public class AFloat
             m_beforeDeci = l_string.substring(0,l_index);
             // now we remove any leading zeros
             m_beforeDeci = m_beforeDeci.replaceAll("^0+(?!$)","");
-
             m_afterDeci  = l_string.substring(l_index+1);
             // now we remove trailing zero
             m_afterDeci  = m_afterDeci.replaceAll("0+$","");
+
             if(m_afterDeci == "")m_afterDeci = "0";
             // this will happen when there nothing after decimal
             
@@ -72,8 +75,38 @@ public class AFloat
         m_sign         = l_other.m_sign;
     }
 
+    private boolean isZero()
+    {
+        return (m_beforeDeci.equals("0") && m_afterDeci.equals("0"));
+    }
     public AFloat Add(AFloat l_other)
     {
+        // if either of them is zero we just return 
+        // the other value
+        if(this.isZero()) return new AFloat(l_other);
+        else if(l_other.isZero()) return new AFloat(this);
+        if((m_sign != l_other.m_sign))// if one one of them is negative then we have to subtract
+        {
+            // first we make copies because we dont want to change 
+            // original values
+            AFloat copy      = new AFloat(this); 
+            AFloat otherCopy = new AFloat(l_other);
+            // but we want the signs to be positive
+            copy.m_sign = true;
+            otherCopy.m_sign = true;
+   
+            if(m_sign == false)
+            {
+                // this is -a + b == b - a
+                return otherCopy.Subtract(copy);
+            }
+            else if(l_other.m_sign == false)
+            {
+                // this is a + (-b) = a - b;
+                return copy.Subtract(otherCopy);
+            }
+        }
+
         // first we add digits after deci
         int l_carry = 0;
     
@@ -145,17 +178,55 @@ public class AFloat
             {
                 char t = (a.m_digitsAfter > b.m_digitsAfter) ? a.m_afterDeci.charAt(i) : b.m_afterDeci.charAt(i);
                 if(t != '0') return ((a.m_digitsAfter > b.m_digitsAfter) ? 1 : -1);
-
             }
-
             return 0;
         }
-
     }
 
     public AFloat Subtract(AFloat l_other)
     {
         AFloat l_answer = new AFloat();
+
+        // if first argument is zero then we return
+        // the negative of the other value
+        if(this.isZero()) 
+        {
+            l_answer = new AFloat(l_other);
+            l_answer.m_sign = !(l_other.m_sign);
+            return l_answer;
+        }
+        else if(l_other.isZero()) return new AFloat(this); 
+        // second arg is 0 then just return the first argument
+        if(m_sign== false || l_other.m_sign == false)
+        {
+            // if the signs are not same 
+            // then we handle those cases differently 
+            AFloat copy      = new AFloat(this);
+            AFloat otherCopy = new AFloat(l_other);
+            copy.m_sign = true;
+            otherCopy.m_sign = true;
+            if(m_sign == false && l_other.m_sign == false)
+            {
+                // this is -a - (-b)
+                // which is b - a
+                return otherCopy.Subtract(copy);
+            }
+            else if(m_sign == false)
+            {
+                // this is basically -a -b
+                // so we can do ans = -(a+b)
+                l_answer = copy.Add(otherCopy);
+                // and now flip the sign of the answer
+                l_answer.m_sign = false;
+                return l_answer;
+            }
+            else if(l_other.m_sign == false)
+            {
+                // this is  a - (-b)
+                // which is a + b
+                return copy.Add(otherCopy);
+            }
+        }
 
         // again we always subtract smaller number from smaller
         // first we subtract digits after decimal
@@ -183,7 +254,6 @@ public class AFloat
             --i;
         }
         
-        
         // now we subtract the digits before decimal
         // now first subtract the borrow and and then subtract them
         AInteger copy = new AInteger(m_beforeDeci);
@@ -201,6 +271,8 @@ public class AFloat
 
     public AFloat Mult(AFloat l_other)
     {
+        if(this.isZero() || l_other.isZero()) return new AFloat("0.0");
+        // if either of the values are zero then we return zero
         AFloat l_answer = new AFloat();
         // just multiply them as integer and replace 
         // the decimal's place
@@ -232,7 +304,7 @@ public class AFloat
         l_answer.m_sign = (m_sign == l_other.m_sign);
         
         l_answer.m_digitsBefore = l_answer.m_beforeDeci.length();
-        l_answer.m_digitsAfter = l_answer.m_afterDeci.length();
+        l_answer.m_digitsAfter  = l_answer.m_afterDeci.length();
          
         return l_answer;
     }
@@ -241,6 +313,13 @@ public class AFloat
     // we would try to implement the divison usig newtow raphson method
     public AFloat Divide(AFloat l_other)
     {
+        if(this.isZero()) return new AFloat("0.0");
+        // if numerator is zero we return zero
+        if(l_other.isZero())
+        {
+            // if denominator is zero then we throw exception
+            throw new IllegalArgumentException("Division by Zero");
+        }
         
         // we are going to implement newton raphson method
         // which basically approximate value of 1/l_other
@@ -249,40 +328,90 @@ public class AFloat
         // and presision almost doubles with every iteration 
         // so for precision upto 1000 digits 10 iteration ought to be enough
         // but we will do upto 12 iterations
+
         StringBuilder l_initialGuess = new StringBuilder("1");
-        for(int i = 0; i< l_other.m_digitsBefore; ++i)
+        for(int i = 0; i< l_other.m_digitsBefore-1; ++i)
         { l_initialGuess.insert(0,"0"); }
         l_initialGuess.insert(0,"0.");
         AFloat l_answer = new AFloat(l_initialGuess.toString());
+        l_answer.Print();
         // initial guess
         // based on number of digits in l_other
         AFloat l_two = new AFloat("2.0");
+        AFloat l_prev = new AFloat();
         int i = 0;
-        System.out.print("is it coming here\n");
+ 
         while(i < 20)
         {
+            if(Compare(l_prev,l_answer) == 0)
+            {
+                System.out.print("it gets here into brake\n");
+                l_answer.Print();
+                break;
+            }
+            l_prev = l_answer;
+            AFloat mult = l_other.Mult(l_answer); // b * xi
+            AFloat sub  = l_two.Subtract(mult);    // (2 - b * xi)
+            l_answer    = l_answer.Mult(sub);    // xi+1 = xi * (2 - b * xi)
 
-
-            AFloat mult = l_other.Mult(l_answer); // b * xₙ
-            AFloat sub = l_two.Subtract(mult);    // (2 - b * xₙ)
-            l_answer = l_answer.Mult(sub);    // xₙ₊₁ = xₙ * (2 - b * xₙ)
             i++;
             
             // we are trimmin upto 1500 to get accurary of 1000 on final result 
             // if we only trim till 1000 its not accurate upto 1000
             if (l_answer.m_afterDeci.length() > 1500) 
             {
-                l_answer.m_afterDeci = l_answer.m_afterDeci.substring(0, 1500);
+                l_answer.m_afterDeci   = l_answer.m_afterDeci.substring(0, 1500);
                 l_answer.m_digitsAfter = 1500;
             }
         }
 
+        
         l_answer =  this.Mult(l_answer);
+        l_answer.Print();
+        // now newton raphson will not converge due to our initial guess being
+        // not very good so we will use heuristic to get a non repeasing answer
 
-        if (l_answer.m_afterDeci.length() > 1000)// trimming upto 1000 digits after decimal
+        if(l_answer.m_afterDeci.length() > 1000 && l_answer.m_afterDeci.substring(980,1000).equals("99999999999999999999"))
         {
-            l_answer.m_afterDeci = l_answer.m_afterDeci.substring(0, 1000);
-            l_answer.m_digitsAfter = 1000;
+            // the the answer is converging to a number
+            // so we find the first non zero number
+            int l_index = -1;
+            for(int j = 980; j >= 0; --j)
+            {
+                // finding the first non 9 number
+                //i.e the number after which 9s state to repeat
+                if(l_answer.m_afterDeci.charAt(j) != '9')
+                {
+                    l_index = j;
+                    break;
+                }
+            }
+            if(l_index == -1)
+            {
+                // it we dont find any non nine that the answer is a interger
+                // so we adjust accordinly by add 1 to the digit before integer]
+                // example 1.999999999... -> 2.0
+                l_answer.m_afterDeci = "0";
+                l_answer.m_digitsAfter = 0;
+                l_answer = l_answer.Add(new AFloat("1.0"));
+            }
+            else
+            {
+                // otherwise we replace the non nine digit with a digit+1
+                // example 2.4999999... -> 2.5
+                StringBuilder l_roundOff = new StringBuilder(l_answer.m_afterDeci.substring(0,l_index+1));
+                int replacement = l_roundOff.charAt(l_index) - '0' + 1;
+                l_roundOff.replace(l_index,l_index+1,String.valueOf(replacement));
+                l_answer.m_afterDeci = l_roundOff.toString();
+                l_answer.m_digitsAfter = l_answer.m_afterDeci.length();
+
+            }
+        }
+
+        if (l_answer.m_afterDeci.length() > m_precision)// trimming upto 1000 digits after decimal
+        {
+            l_answer.m_afterDeci   = l_answer.m_afterDeci.substring(0, m_precision);
+            l_answer.m_digitsAfter = m_precision;
         }
 
         return l_answer;
@@ -303,6 +432,8 @@ public class AFloat
 
     public String GetValue()
     {
-        return (m_beforeDeci + '.' + m_afterDeci);
+        return (m_sign ? "" : '-')+(m_beforeDeci + '.' + m_afterDeci);
+        // if sign is negative(i.e m_sign is false)
+        // then add '-' in front of the value
     }
 }

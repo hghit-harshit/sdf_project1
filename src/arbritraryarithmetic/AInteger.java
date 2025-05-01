@@ -7,6 +7,7 @@ public class AInteger
     protected int m_digits; // number of digits in the number
     private boolean m_sign; // if ture then postive and false for negative
     // made them protected as i wanted AFloat to be able to access them
+
     public AInteger() // default constructor
     {
         m_value = "0";
@@ -22,7 +23,7 @@ public class AInteger
             System.out.print("Invalid entry!\n");
             throw new IllegalArgumentException("Invalid Input\n");
         }
-        if(l_string.charAt(0) == '-')
+        if(l_string.charAt(0) == '-')// if the first character is '-' then the number is 
         {
             l_string = l_string.substring(1);
             m_sign = false;
@@ -49,17 +50,19 @@ public class AInteger
     
     public AInteger Add(AInteger l_other)
     {
-        // if one one of them is negative then we have to subtract
-        if(m_value == "0" )return new AInteger(l_other);
-        else if(l_other.m_value == "0") return new AInteger(this);
-        if((m_sign != l_other.m_sign))
+        // if one of them is zeor we just return the other number
+        if(m_value.equals("0") )return new AInteger(l_other);
+        else if(l_other.m_value.equals("0")) return new AInteger(this);
+        if((m_sign != l_other.m_sign))// if one one of them is negative then we have to subtract
         {
-            AInteger copy      = new AInteger(this);
+            // first we make copies because we dont want to change 
+            // original values
+            AInteger copy      = new AInteger(this); 
             AInteger otherCopy = new AInteger(l_other);
-            // but we want the sign to be positive
+            // but we want the signs to be positive
             copy.m_sign = true;
             otherCopy.m_sign = true;
-            //System.out.print("is it getting here\n");
+   
             if(m_sign == false)
             {
                 // this is -a + b == b - a
@@ -142,22 +145,33 @@ public class AInteger
     public AInteger Subtract(AInteger l_other)
     {
         AInteger l_answer = new AInteger(); // Initialize with 0
-        if(m_value == "0")
+        // if first argument is zero then we return 
+        // the negative of the other value
+        if(m_value.equals("0")) 
         {
             l_answer = new AInteger(l_other);
             l_answer.m_sign = !(l_other.m_sign);
             return l_answer;
         }
-        else if(l_other.m_value == "0") return new AInteger(this);
-        if(m_sign!=l_other.m_sign)
+        else if(l_other.m_value.equals("0")) return new AInteger(this); 
+        // second arg is 0 then just return the first argument
+        
+        else if(m_sign== false || l_other.m_sign == false)
         {
-            
-
+            // if the signs are not same 
+            // then we handle those cases differently
             AInteger copy      = new AInteger(this);
             AInteger otherCopy = new AInteger(l_other);
             copy.m_sign = true;
             otherCopy.m_sign = true;
-            if(m_sign == false)
+
+            if(m_sign == false && l_other.m_sign == false)
+            {
+                // this is -a - (-b)
+                // which is b - a
+                return otherCopy.Subtract(copy);
+            }
+            else if(m_sign == false)
             {
                 // this is basically -a -b
                 // so we can do ans = -(a+b)
@@ -280,14 +294,15 @@ public class AInteger
 
     public AInteger Divide(AInteger l_other)
     {
-        if(m_value == "0")return new AInteger("0");
-        else if(l_other.m_value == "1") return new AInteger(this);
-        else if(l_other.m_value == "0")
+        l_other.Print();
+        if(m_value.equals("0"))return new AInteger("0");
+        else if(l_other.m_value.equals("1")) return new AInteger(this);
+        else if(l_other.m_value.equals("0"))
         {
             System.out.print("Division by zero!\n");
             throw new IllegalArgumentException("Division by Zero!");
         }
-        
+        System.out.print("its getting here\n");
     
         // We could use the newton raphson method that is 
         // implemented in float and just output the part before decimal
