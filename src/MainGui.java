@@ -32,7 +32,7 @@ public class MainGui {
     private void prepareGui()
     {
         m_mainFrame = new JFrame("Test window");
-        m_mainFrame.setSize(600,600);
+        m_mainFrame.setSize(600,400);
         m_mainFrame.setLayout(null);
         m_mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -51,18 +51,18 @@ public class MainGui {
         m_answer = new JTextField("Answer");
 
         m_first.setEditable(true);
-        m_first.setBounds(0,0,200,50);
+        m_first.setBounds(100,0,400,50);
         m_second.setEditable(true);
-        m_second.setBounds(0,60,200,50);
+        m_second.setBounds(100,60,400,50);
         m_answer.setEditable(false); // we dont want the answer field to be modifiable
-        m_answer.setBounds(0,170,200,50);;
+        m_answer.setBounds(100,170,400,50);;
  
         // setting up the positions of elements in the frame
-        m_mult.setBounds(0,120,100,40);
-        m_div.setBounds(110,120,100,40);
-        m_add.setBounds(220,120,100,40);
-        m_sub.setBounds(330,120,100,40);
-        m_switch.setBounds(440,120,100,40);
+        m_mult.setBounds(25,120,100,40);
+        m_div.setBounds(135,120,100,40);
+        m_add.setBounds(245,120,100,40);
+        m_sub.setBounds(355,120,100,40);
+        m_switch.setBounds(465,120,100,40);
 
         Listener l_listener = new Listener();
 
