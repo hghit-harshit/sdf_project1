@@ -102,7 +102,7 @@
             </fileset>
 
             <manifest>
-                <attribute name="Main-class" value="MainGuiArith"/>
+                <attribute name="Main-class" value="MainGui"/>
             </manifest>
             
         </jar>
