@@ -13,7 +13,7 @@ Clone the repository and run : <br>
 then you can either use GUI version by running :<br>
 `ant runGui` <br>
 or run from the terminal: <br>
-` ant run -Dargs="<int/float> <operation> <operand1> <operand2>" `
+` ant run -Dargs="<int/float> <operation> <operand1> <operand2>" `<br>
 or use the terminal version by going to build directory and running:<br>
 ` java MyInfArith <int/float> <operation> <operand1> <operand2>`<br>
 or if you want to build using python you can complie using ant and then run<br>
