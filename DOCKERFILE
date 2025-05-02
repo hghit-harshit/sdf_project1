@@ -1,0 +1,22 @@
+FROM eclipse-temurin:17-jdk AS build
+
+
+#Setgin working directory
+WORKDIR /src
+
+#Copyting everything to src
+COPY . /src
+
+RUN ant build-jar
+
+#Now for the runtime 
+FROM eclipse-temurin:17-jre
+
+#Setting a working directory in runtime stage
+
+WORKDIR /app
+
+#Copying from the build
+COPY --from=build /src/build/jar/MyInfArith.jar /app/MyInfArith.jar
+
+ENTRYPOINT [ "java","-jar","MyInfArith.jar" ]
