@@ -3,6 +3,11 @@
     <!--Directories-->
     <property name="src.dir" value="src"/>
     <property name="build.dir" value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="jar.dir"     value="${build.dir}/jar"/>
+    <property name="package.jar" value="${jar.dir}/arbritraryarithmetic.jar"/>
+    <property name="main.jar"    value="${jar.dir}/MainApp.jar"/>
+    <property name="maingui.jar" value="${jar.dir}/MainGui.jar"/>
     <property name="lib.dir" value="lib"/>
     <property name="test.dir" value="test"/>
     <property name="report.dir" value="test-report"/>
@@ -16,10 +21,11 @@
 
     <!-- Compiling source code -->
     <target name="compile" depends="init">
-        <javac srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="false">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false">
             <classpath>
                 <path>
-                    <pathelement path="${build.dir}" />
+                    <pathelement path="${classes.dir}" />
                     <fileset dir="${lib.dir}" includes="**/*.jar"/>
                 </path>
             </classpath>
@@ -28,10 +34,10 @@
 
     <!--Compiling tests-->
     <target name="compile-tests" depends="compile">
-        <javac srcdir="${test.dir}" destdir="${build.dir}" includeantruntime="false">
+        <javac srcdir="${test.dir}" destdir="${classes.dir}" includeantruntime="false">
             <classpath>
                 <path>
-                    <pathelement path="${build.dir}"/>
+                    <pathelement path="${classes.dir}"/>
                     <fileset dir="${lib.dir}" includes="**/*.jar"/>
                 </path>
             </classpath>
@@ -42,7 +48,7 @@
     <target name="test" depends="compile-tests">
         <junit printsummary="yes" haltonfailure="no">
             <classpath>
-                <pathelement path="${build.dir}"/>
+                <pathelement path="${classes.dir}"/>
                 <fileset dir="${lib.dir}" includes="**/*.jar"/>
             </classpath>
             <batchtest todir="${report.dir}">
@@ -58,7 +64,7 @@
     <target name="run" depends="compile">
         <java classname="MyInfArith" fork="true">
             <classpath>
-                <pathelement path="${build.dir}"/>
+                <pathelement path="${classes.dir}"/>
             </classpath>
         </java>
     </target>
@@ -67,11 +73,40 @@
     <target name = "runGui" depends="compile">
         <java classname = "MainGui" fork= "true">
             <classpath>
-                <pathelement path="${build.dir}"/>
+                <pathelement path="${classes.dir}"/>
             </classpath>
         </java>
     </target>
 
+    <!--Create the jar files-->
+    <target name="build-jar" depends="compile">
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${package.jar}" basedir="${classes.dir}">
+            <include name="arbritraryarithmetic/**/"/>
+        </jar>
+        <jar destfile="${main.jar}" basedir="${classes.dir}">
+            <fileset dir="${classes.dir}">
+                <include name="MyInfArith.class"/>
+                <include name="arbritraryarithmetic/**"/>
+            </fileset>
+
+            <manifest>
+                <attribute name="Main-class" value="MyInfArith"/>
+            </manifest>
+            
+        </jar>
+        <jar destfile="${maingui.jar}" basedir="${classes.dir}">
+            <fileset dir="${classes.dir}">
+                <include name="MainGui.class"/>
+                <include name="arbritraryarithmetic/**"/>
+            </fileset>
+
+            <manifest>
+                <attribute name="Main-class" value="MainGuiArith"/>
+            </manifest>
+            
+        </jar>
+    </target>
     <!--Clean up the build-->
     <target name="clean">
         <delete dir="${build.dir}"/>
