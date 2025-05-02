@@ -1,5 +1,6 @@
-FROM eclipse-temurin:17-jdk AS build
+FROM eclipse-temurin:23-jdk AS build
 
+RUN apt-get update && apt-get install -y ant
 
 #Setgin working directory
 WORKDIR /src
@@ -7,16 +8,19 @@ WORKDIR /src
 #Copyting everything to src
 COPY . /src
 
+WORKDIR /src/
 RUN ant build-jar
+RUN find /src
 
 #Now for the runtime 
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:23-jre
 
 #Setting a working directory in runtime stage
 
 WORKDIR /app
 
 #Copying from the build
-COPY --from=build /src/build/jar/MyInfArith.jar /app/MyInfArith.jar
 
-ENTRYPOINT [ "java","-jar","MyInfArith.jar" ]
+COPY --from=build /src/build/jar/MainApp.jar /app/MainApp.jar
+
+ENTRYPOINT [ "java","-jar","MainApp.jar" ]

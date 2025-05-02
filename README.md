@@ -15,4 +15,7 @@ then you can either use GUI version by running :
 or use the terminal version by going to build directory and running:
 ` java MyInfArith <int/float> <operation> <operand1> <operand2>`
 
-
+Or you can use the docker by:
+` docker pull hghit007/sdf-project-1:fourth `
+and then :
+` docker run --rm hghit007/sdf-project-1:fourth docker run --rm hghit007/sdf-project-1:first` 
