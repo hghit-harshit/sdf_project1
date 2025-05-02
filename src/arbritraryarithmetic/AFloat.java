@@ -22,7 +22,7 @@ public class AFloat
     public AFloat(String l_string)
     {
 
-        m_precision = 20;
+        m_precision = 30;
         // first we'll remove all the spaces from the string
         l_string = l_string.replaceAll("\\s+", "");
         //l_string = l_string.trim().replaceAll("[^\\d.-]", "");
