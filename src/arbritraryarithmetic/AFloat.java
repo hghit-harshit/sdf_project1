@@ -30,7 +30,6 @@ public class AFloat
         // then we check if the string is in valid form
         if(!l_string.matches("^-?\\d+(\\.\\d+)?$"))
         {
-            System.out.print("integer me problem h\n");
             System.out.print("Invalid Entry");
         }
 
@@ -334,7 +333,7 @@ public class AFloat
         { l_initialGuess.insert(0,"0"); }
         l_initialGuess.insert(0,"0.");
         AFloat l_answer = new AFloat(l_initialGuess.toString());
-        l_answer.Print();
+
         // initial guess
         // based on number of digits in l_other
         AFloat l_two = new AFloat("2.0");
@@ -345,8 +344,6 @@ public class AFloat
         {
             if(Compare(l_prev,l_answer) == 0)
             {
-                System.out.print("it gets here into brake\n");
-                l_answer.Print();
                 break;
             }
             l_prev = l_answer;
@@ -367,7 +364,7 @@ public class AFloat
 
         
         l_answer =  this.Mult(l_answer);
-        l_answer.Print();
+    
         // now newton raphson will not converge due to our initial guess being
         // not very good so we will use heuristic to get a non repeasing answer
 

@@ -294,7 +294,7 @@ public class AInteger
 
     public AInteger Divide(AInteger l_other)
     {
-        l_other.Print();
+    
         if(m_value.equals("0"))return new AInteger("0");
         else if(l_other.m_value.equals("1")) return new AInteger(this);
         else if(l_other.m_value.equals("0"))
@@ -302,7 +302,7 @@ public class AInteger
             System.out.print("Division by zero!\n");
             throw new IllegalArgumentException("Division by Zero!");
         }
-        System.out.print("its getting here\n");
+        
     
         // We could use the newton raphson method that is 
         // implemented in float and just output the part before decimal
